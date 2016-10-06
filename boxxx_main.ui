@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Boxxx DNS Configurator</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../../Images/favico_boxxx.xpm</normaloff>../../../Images/favico_boxxx.xpm</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTableWidget" name="t_listdnszone"/>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label_input_newdnszone">
+        <property name="text">
+         <string>Enter DNS zone (i.e google.fr)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="input_newdnszone">
+        <property name="inputMask">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QPushButton" name="add">
+          <property name="text">
+           <string>Add</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="cancel">
+          <property name="text">
+           <string>Cancel</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionView_config"/>
+    <addaction name="actionExport_conf"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <widget class="QMenu" name="menuAdd">
+     <property name="title">
+      <string>Add</string>
+     </property>
+     <addaction name="actionDNS_Entry"/>
+     <addaction name="actionDNS_Sever"/>
+    </widget>
+    <addaction name="menuAdd"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <widget class="QMenu" name="menuDNS_State">
+     <property name="title">
+      <string>DNS State</string>
+     </property>
+     <addaction name="actionLocal_DNC"/>
+     <addaction name="actionDistant_DNS"/>
+    </widget>
+    <addaction name="actionRestart_DNS"/>
+    <addaction name="menuDNS_State"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuTools"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionView_config">
+   <property name="text">
+    <string>View conf</string>
+   </property>
+  </action>
+  <action name="actionExport_conf">
+   <property name="text">
+    <string>Export conf</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionDNS_Entry">
+   <property name="text">
+    <string>DNS Entry</string>
+   </property>
+  </action>
+  <action name="actionDNS_Sever">
+   <property name="text">
+    <string>DNS Sever</string>
+   </property>
+  </action>
+  <action name="actionRestart_DNS">
+   <property name="text">
+    <string>Restart DNS</string>
+   </property>
+  </action>
+  <action name="actionLocal_DNC">
+   <property name="text">
+    <string>Local DNS</string>
+   </property>
+  </action>
+  <action name="actionDistant_DNS">
+   <property name="text">
+    <string>Distant DNS</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
