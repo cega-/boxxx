@@ -4,25 +4,9 @@
 from PyQt4 import QtGui
 import re
 import sys
+import xmlrpclib
 
 import boxxx_main
-
-###regexp "^zone\s\"(.*)\"\sIN\s{$"
-
-file_string = 'Coucou\n\
-zone "vk.com" IN {\n\
-        type master;\n\
-        file "/etc/bind/db.vk.com";\n\
-};\n\
-zone "cega.lan" IN {\n\
-        type master;\n\
-        file "/etc/bind/db.cega.lan";\n\
-};\n\
-zone "test.lan" IN {\n\
-        type master;\n\
-        file "/etc/bind/db.test.lan";\n\
-};\n\
-\##Supervouvou'
 
 class BoxxxApp(QtGui.QMainWindow, boxxx_main.Ui_MainWindow):
 	def __init__(self):
@@ -39,6 +23,13 @@ class BoxxxApp(QtGui.QMainWindow, boxxx_main.Ui_MainWindow):
 		self.t_listdnszone.horizontalHeader().setVisible(False)
 		self.l_zone_dns = []
 		self.l_file_zone_dns = []
+		self.url_rpc_server = 'localhost'
+		self.port_rpc_server = 9000
+		self.bind_file_main_zone_conf = '/tmp/name.option.local'
+		self.file_zone_path = '/tmp/db.'
+#		self.file_zone_path = '/etc/bind/db.'
+		self.rpc_api = xmlrpclib.ServerProxy('http://{0}:{1}/'.format(self.url_rpc_server, self.port_rpc_server))
+		self.file_string = self.rpc_api.read_file(self.bind_file_main_zone_conf)
 		self.get_zonedns_infile()
 
 	def create_zone_dns(self, dnszone_name):
@@ -46,7 +37,7 @@ class BoxxxApp(QtGui.QMainWindow, boxxx_main.Ui_MainWindow):
 		return template_zone_dns
 
 	def get_zonedns_infile(self):
-		l_line_file = file_string.split('\n')
+		l_line_file = self.file_string.split('\n')
 		
 		number_of_line = len(l_line_file)
 		flag = False
@@ -77,8 +68,6 @@ class BoxxxApp(QtGui.QMainWindow, boxxx_main.Ui_MainWindow):
 				self.l_file_zone_dns.append(line)
 			i += 1
 
-		print self.l_file_zone_dns
-
 	def send_zone_to_bind(self):
 		new_file_zone_ref = ''
 
@@ -86,20 +75,41 @@ class BoxxxApp(QtGui.QMainWindow, boxxx_main.Ui_MainWindow):
 			if re.search('^<!-- DNS ZONE -->$', line):
 				for zone in self.l_zone_dns:
 					new_file_zone_ref += self.create_zone_dns(zone)
+					self.create_file_zone(zone)
 			else:
 				new_file_zone_ref += '{0}\n'.format(line)
-#		send_rpc
-		print new_file_zone_ref
+		self.rpc_api.create_file(self.bind_file_main_zone_conf, new_file_zone_ref)
+		self.rpc_api.restart_service(['service', 'resolvconf', 'restart', '>', '/tmp/bind_restart.log'])
 
-#	def creation du fichier de reference pour la zone(self):
-#		pass
+	def create_file_zone(self, zone):
+		file_entry_dns_zone = ';\n\
+; BIND data file for local loopback interface\n\
+;\n\
+$TTL    604800\n\
+@       IN      SOA     ns.{0}. root.localhost. (\n\
+                              4         ; Serial\n\
+                         604800         ; Refresh\n\
+                          86400         ; Retry\n\
+                        2419200         ; Expire\n\
+                         604800 )       ; Negative Cache TTL\n\
+;\n\
+@       IN      NS      ns.{0}.\n\
+NS      IN      A       192.168.42.1\n\
+www     IN      A       192.168.42.1\n\
+@       IN      AAAA    ::1\n'.format(zone)
+
+		self.rpc_api.create_file('{0}{1}'.format(self.file_zone_path, zone), file_entry_dns_zone)
+
 
 	def remove_table_row(self, row_id, dnszone_name):
 
 		self.l_zone_dns.remove(dnszone_name)
 
+		self.rpc_api.remove_file('{0}{1}'.format(self.file_zone_path, dnszone_name))
+
 		row_number = self.t_listdnszone.indexAt(row_id).row()
 		self.t_listdnszone.removeRow(row_number)
+		self.send_zone_to_bind()
 
 	def add_zonedns_row(self, dnszone_name):
 		icon_pxm = QtGui.QPixmap('./poubelle.xpm')
