@@ -2,7 +2,7 @@ import re
 import scrapy
 #import tldextract get only domain extract from url no matter subdomain
 
-from scrapy.utils.markup import remove_tags
+from scrapy.utils.markup import replace_tags, replace_escape_chars
 
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
@@ -27,9 +27,11 @@ class QuotesSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def remove_html_tags(self, data):
-        ret = remove_tags(data)
+        ret = replace_tags(data, token=' ')
+        ret = replace_escape_chars(ret)
+        ret = re.sub(' {2,}', ' ', ret)
 
-        ret = re.sub('\\\t|\\n|\\t|\\r| {2,}', ' ', ret)
+#        ret = re.sub('\\\t|\\n|\\t|\\r| {2,}', ' ', ret)
 
  #       self.log('$$$$$$$$$$$$$$\n{0}\n$$$$$$$$$$$$$$'.format(type(ret)))
 
