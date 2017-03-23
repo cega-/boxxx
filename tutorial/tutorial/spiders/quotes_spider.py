@@ -1,3 +1,4 @@
+import os
 import re
 import scrapy
 #import tldextract get only domain extract from url no matter subdomain
@@ -15,6 +16,12 @@ class QuotesSpider(scrapy.Spider):
 	l_100_complex = ['adulthood is a miracle']
 	l_50_complex = ['world of success']
 	l_black_list = []
+	urls = {}
+	domain_stats = {}
+	l_new_domain_to_explore = []
+
+	def insert_in_url_to_parse(self, d_url_info):
+		self.urls[str(os.urandom(16))] = {'parent': d_url_info['parent'], 'link': d_url_info['link'], 'level': d_url_info['level']}
 
 	def start_requests(self):
 #        urls = [
@@ -28,9 +35,23 @@ class QuotesSpider(scrapy.Spider):
 		urls = [
 			'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
 		]
+		d_url_info = {}
+
+		d_url_info['parent'] = None
+		d_url_info['link'] = 'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
+		d_url_info['level'] = 0
+		self.insert_in_url_to_parse(d_url_info)
+
 		self.log('GROSSE INFO {0}'.format(self.coucou))
-		for url in urls:
-			yield scrapy.Request(url=url, callback=self.parse)
+		self.log('\n\n** --- GROSSE INFO {0} ---- **\n\n'.format(self.urls.keys()))
+		self.log('\n\n** --- GROSSE INFO {0} ---- **\n\n'.format(self.urls))
+		for key, d_url in self.urls.iteritems():
+			self.log('\n\n** --- URL {0} ---- **\n\n'.format(d_url))
+
+			request = scrapy.Request(url=d_url['link'], callback=self.parse)
+			request.meta['d_url'] = d_url
+			request.meta['key'] = key
+			yield request
 
 	def remove_html_tags(self, data):
 		ret = replace_tags(data, token=' ')
@@ -295,8 +316,56 @@ class QuotesSpider(scrapy.Spider):
 #            self.log('\n::: {0} \n {1} :::\n'.format(link_split, link))
 
 
+	def is_current_domain(self, current_page, link):
+		page = link.split("/")
+		http = page[0]
+
+#		self.log('\n\n** --- URL SPLIT {0} ---- **\n\n'.format(page))
+
+		try:
+			page = '//'.join([page[0], page[2]])
+		except Exception, e:
+			page = '//'.join([page[0], page[1]])
+			pass
+		
+#		self.log('\n\n** --- HTTP {0} - {1} ---- **\n\n'.format(link, page))
+
+		if page == current_page:
+			return True
+		elif not http : 
+			return True
+		else:
+			return False
+
+	def insert_into_new_domain_to_explore(self, d_url):
+		already_in = False
+
+		for domain in self.l_new_domain_to_explore:
+			if domain['domain'] == d_url['domain']:
+				already_in = True
+				break
+		
+		if not already_in:
+			self.l_new_domain_to_explore.append({'parent': d_url['parent'], 'link': d_url['link'], 'level': d_url['level'], 'domain': d_url['domain']})
+
+	def get_new_domain_to_explore(self)
+		l_domain = []
+
+		for domain in self.l_new_domain_to_explore:
+
+		return l_domain
+
 	def parse(self, response):
-		page = response.url.split("/")[-2]
+
+		d_url = response.meta['d_url']
+#		key = response.meta['key']
+
+#		del self.urls[key]
+
+		self.log('\n\n** --- YESSSS {0} ---- **\n\n'.format(d_url))
+
+		page = response.url.split("/")
+		page = '//'.join([page[0], page[2]])
 
 		self.d_struct_elem['link'] = response.xpath('//a').extract()
 
@@ -356,6 +425,35 @@ class QuotesSpider(scrapy.Spider):
 		wght_link = self.calc_wght_link()
 
 		self.log('************\n{0} {1}\n************'.format(response.url, wght_link))
+		self.log('************\n{0} {1}\n************'.format(page, wght_link))
+
+		for link in self.d_struct_elem['link_url'] :
+			d_url_info = {}
+			if d_url['level'] <= 2 and self.is_current_domain(page, link):
+				d_url_info['parent'] = page
+				d_url_info['link'] = link
+				d_url_info['level'] = d_url['level'] + 1
+				request = scrapy.Request(url=response.urljoin(link), callback=self.parse)
+				request.meta['d_url'] = d_url_info
+				request.meta['key'] = key
+				yield request
+			elif not self.is_current_domain(page, link):
+				domain = link.split("/")
+				domain = '//'.join([domain[0], domain[2]])
+				d_url_info['parent'] = page
+				d_url_info['domain'] = domain
+				d_url_info['link'] = link
+				d_url_info['level'] = 0
+				self.log('************\n{0} {1}\n************'.format('To Other Domain', link))
+				self.insert_into_new_domain_to_explore(d_url_info)
+
+		for new_domain in self.get_new_domain_to_explore()
+			request = scrapy.Request(url=new_domain['link'], callback=self.parse)
+			request.meta['d_url'] = new_domain
+			request.meta['key'] = key
+			yield request
+
+
 
 '''
 		if select :
