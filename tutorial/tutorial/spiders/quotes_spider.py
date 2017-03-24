@@ -17,10 +17,6 @@ class BoxxxSpider(scrapy.Spider):
 	l_100_complex = []
 	l_50 = []
 	l_50_complex = []
-#	l_100 = ['adulthood', 'inspirational', 'miracle', 'miracles', 'aliteracy', 'deep-thoughts', 'thinking', 'abilities', 'paraphrased', 'simile']
-#	l_50 = ['world', 'success', 'value', 'life', 'live', 'books', 'classic', 'humor', 'change', 'choices', 'love', 'truth', 'milk', 'parc']
-#	l_100_complex = ['adulthood is a miracle']
-#	l_50_complex = ['world of success']
 	d_black_list = {}
 	d_suspicious_list = {}
 	urls = {}
@@ -49,22 +45,6 @@ class BoxxxSpider(scrapy.Spider):
 		return l_list
 
 	def start_requests(self):
-#        urls = [
-#            'http://nepi-vtudev.neuilly.ratp/test_scrapy.html',
-#            'http://grosincidents-dev.neuilly.ratp',
-#            'http://atlas.neuilly.ratp/',
-#            'http://grr.neuilly.ratp',
-#            'http://tdbcg-dev.neuilly.ratp',
-#            'http://segyka-dev.neuilly.ratp'
-#        ]
-#		urls = [
-#			'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
-#		]
-#		d_url_info = {}
-
-#		d_url_info['parent'] = None
-#		d_url_info['link'] = 'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
-#		d_url_info['level'] = 0
 
 		self.log('\n\n** ---- INIT Spider data ---- **\n\n'.format())
 
@@ -389,6 +369,8 @@ class BoxxxSpider(scrapy.Spider):
 		nbr_entry_in_black_list = 0
 		weight = 0
 
+		self.log('\n\n** ---- BLACKLIST Evaluation ---- **\n\n'.format())
+
 		for page, page_info in self.d_black_list.iteritems():
 			nbr_entry_in_black_list +=1
 			weight += page_info['weight']
@@ -398,15 +380,23 @@ class BoxxxSpider(scrapy.Spider):
 		else:
 			global_black_list_average_weight = 0
 
+		fd = open('black_list.list', 'a')
+
 		if weight >= global_black_list_average_weight:
 			self.d_black_list[page] = {'weight': weight}
+			self.log('\n\n** ---- INSERT In blacklist {0} ---- **\n\n'.format(page))
+			fd.write('{0}*{1}'.format(page, weight))
 		elif weight >= global_black_list_average_weight*0.7 and weight < global_black_list_average_weight:
 			self.d_black_list[page] = {'weight': weight}
+			self.log('\n\n** ---- INSERT In blacklist {0} ---- **\n\n'.format(page))
+			fd.write('{0}*{1}'.format(page, weight))
 		elif weight >= global_black_list_average_weight*0.4 and weight < global_black_list_average_weight*0.7:
 			self.d_suspicious_list[page] = {'weight': weight}
 		elif weight < global_black_list_average_weight*0.4:
 			#Nothing todo
 			pass
+
+		fd.close()
 
 		return
 
