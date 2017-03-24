@@ -1,27 +1,52 @@
+import logging
 import os
 import re
 import scrapy
 #import tldextract get only domain extract from url no matter subdomain
 #import chardet detect encoding
 
+from scrapy.utils.log import configure_logging
 from scrapy.utils.markup import replace_tags, replace_escape_chars
 
-class QuotesSpider(scrapy.Spider):
-	name = "quotes"
+class BoxxxSpider(scrapy.Spider):
+	name = "Boxxx Crawl"
 	coucou = 'Vachement super'
 	d_struct_elem = {}
 	d_urls = {}
-	l_100 = ['adulthood', 'inspirational', 'miracle', 'miracles', 'aliteracy', 'deep-thoughts', 'thinking', 'abilities', 'paraphrased', 'simile']
-	l_50 = ['world', 'success', 'value', 'life', 'live', 'books', 'classic', 'humor', 'change', 'choices', 'love', 'truth', 'milk', 'parc']
-	l_100_complex = ['adulthood is a miracle']
-	l_50_complex = ['world of success']
-	l_black_list = []
+	l_100 = []
+	l_100_complex = []
+	l_50 = []
+	l_50_complex = []
+#	l_100 = ['adulthood', 'inspirational', 'miracle', 'miracles', 'aliteracy', 'deep-thoughts', 'thinking', 'abilities', 'paraphrased', 'simile']
+#	l_50 = ['world', 'success', 'value', 'life', 'live', 'books', 'classic', 'humor', 'change', 'choices', 'love', 'truth', 'milk', 'parc']
+#	l_100_complex = ['adulthood is a miracle']
+#	l_50_complex = ['world of success']
+	d_black_list = {}
+	d_suspicious_list = {}
 	urls = {}
-	domain_stats = {}
 	l_new_domain_to_explore = []
+	l_url_already_parse = []
+	d_domain_abstract_weight = {}
 
-	def insert_in_url_to_parse(self, d_url_info):
-		self.urls[str(os.urandom(16))] = {'parent': d_url_info['parent'], 'link': d_url_info['link'], 'level': d_url_info['level']}
+	configure_logging(install_root_handler=False)
+	logging.basicConfig(
+		filename='boxxx_website_blacklist_indexer.scrapy.log',
+		format='%(asctime)s - %(name)s - %(levelname)s: %(message)s',
+		level=logging.INFO
+	)
+
+	def insert_in_url_to_parse(self, website):
+		self.urls[str(os.urandom(16))] = {'parent': None, 'link': website, 'level': 0}
+
+	def init_list_data_from_file(self, filename):
+		l_list = []
+
+		fd = open(filename, 'r')
+
+		for line in fd:
+			l_list.append(line[:-1])
+
+		return l_list
 
 	def start_requests(self):
 #        urls = [
@@ -32,21 +57,27 @@ class QuotesSpider(scrapy.Spider):
 #            'http://tdbcg-dev.neuilly.ratp',
 #            'http://segyka-dev.neuilly.ratp'
 #        ]
-		urls = [
-			'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
-		]
-		d_url_info = {}
+#		urls = [
+#			'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
+#		]
+#		d_url_info = {}
 
-		d_url_info['parent'] = None
-		d_url_info['link'] = 'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
-		d_url_info['level'] = 0
-		self.insert_in_url_to_parse(d_url_info)
+#		d_url_info['parent'] = None
+#		d_url_info['link'] = 'http://nepi-vtudev.neuilly.ratp/test_scrapy.html'
+#		d_url_info['level'] = 0
 
-		self.log('GROSSE INFO {0}'.format(self.coucou))
-		self.log('\n\n** --- GROSSE INFO {0} ---- **\n\n'.format(self.urls.keys()))
-		self.log('\n\n** --- GROSSE INFO {0} ---- **\n\n'.format(self.urls))
+		self.log('\n\n** ---- INIT Spider data ---- **\n\n'.format())
+
+		self.l_100 = self.init_list_data_from_file('l_100.list')
+		self.l_50 = self.init_list_data_from_file('l_50.list')
+		self.l_100_complex = self.init_list_data_from_file('l_100_complex.list')
+		self.l_50_complex = self.init_list_data_from_file('l_50_complex.list')
+
+		for website in self.init_list_data_from_file('l_website.list'):
+			self.insert_in_url_to_parse(website)
+
 		for key, d_url in self.urls.iteritems():
-			self.log('\n\n** --- URL {0} ---- **\n\n'.format(d_url))
+			self.log('\n\n** --- SEND New URL to parse {0} ---- **\n\n'.format(d_url))
 
 			request = scrapy.Request(url=d_url['link'], callback=self.parse)
 			request.meta['d_url'] = d_url
@@ -57,11 +88,6 @@ class QuotesSpider(scrapy.Spider):
 		ret = replace_tags(data, token=' ')
 		ret = replace_escape_chars(ret)
 		ret = re.sub(' {2,}', ' ', ret)
-
-#        ret = re.sub('\\\t|\\n|\\t|\\r| {2,}', ' ', ret)
-
- #       self.log('$$$$$$$$$$$$$$\n{0}\n$$$$$$$$$$$$$$'.format(type(ret)))
-
 		return ret.strip()
 
 	def calc_wght_text(self):
@@ -88,7 +114,7 @@ class QuotesSpider(scrapy.Spider):
 			find_complex_100 = re.findall(s_regexp, body)
 			if find_complex_100:
 				weight += 100 * len(find_complex_100)
-#                self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('body', 'complex_100', weight))
+#                self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('body', 'complex_100', weight))
 
 		for complex_50 in self.l_50_complex:
 			complex_50 = complex_50.split(' ')
@@ -103,7 +129,7 @@ class QuotesSpider(scrapy.Spider):
 			find_complex_50 = re.findall(s_regexp, body)
 			if find_complex_50:
 				weight += 50 * len(find_complex_50)
-#                self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('body', 'complex_50', weight))
+#                self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('body', 'complex_50', weight))
 
 		for word in l_text_words:
 			word = word.lower()
@@ -132,7 +158,7 @@ class QuotesSpider(scrapy.Spider):
 			else:
 				weight += self.calc_wght_simple(elem)
 
-#        self.log('************\n{0} {1}\n************'.format(weight, l_elem))
+#        self.log('\n************\n{0} {1}\n************'.format(weight, l_elem))
 		return weight
 
 	def find_simple_term(self, elem):
@@ -218,7 +244,7 @@ class QuotesSpider(scrapy.Spider):
 			c_weight = self.calc_wght(self.d_struct_elem[struct['elem']])
 			if c_weight != 0:
 				weight += c_weight * struct['factor']
-#                self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format(struct['elem'], struct['factor'], weight))
+#                self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format(struct['elem'], struct['factor'], weight))
 
 		return weight
 
@@ -227,10 +253,10 @@ class QuotesSpider(scrapy.Spider):
 
 		if match_term and re.findall('[/=?&]{0}[/=?&\r\n]'.format(match_term[1]), d_link['url']):
 			weight += 2 * match_term[0]
-#            self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('TAG', match_term[1], match_term[0]))
+#            self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('TAG', match_term[1], match_term[0]))
 		elif match_term and re.findall('[/=?&].*{0}.*[/=?&]*'.format(match_term[1]), d_link['url']):
 			weight += 1.8 * match_term[0]
-#            self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('LINK', match_term[1], match_term[0]))
+#            self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('LINK', match_term[1], match_term[0]))
 		elif match_term:
 			weight += 1.5 * match_term[0]
 
@@ -256,16 +282,16 @@ class QuotesSpider(scrapy.Spider):
 		if not match_term :
 			for split_elem in d_link['text'].split(' '):
 				split_elem = split_elem.lower()
-#                self.log('************\nWhere:{0} Which:{1} \n************'.format('Link Text', split_elem))
+#                self.log('\n************\nWhere:{0} Which:{1} \n************'.format('Link Text', split_elem))
 				match_term = self.find_simple_term(split_elem)
 				if match_term:
 					weight += self.weight_4_type_of_link(match_term, d_link)
-#                    self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('link', match_term[1], match_term[0]))
+#                    self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('link', match_term[1], match_term[0]))
 			is_complex = False
 			
 
 #        if match_term:
-#            self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('link', match_term[1], match_term[0]))
+#            self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('link', match_term[1], match_term[0]))
 
 		if is_complex and match_term:
 			match_term = list(match_term)
@@ -280,15 +306,11 @@ class QuotesSpider(scrapy.Spider):
 					s_regexp += word
 			match_term[1] = s_regexp
 			weight += self.weight_4_type_of_link(match_term, d_link)
-#            self.log('************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('link', match_term[1], match_term[0]))
+#            self.log('\n************\nWhere:{0} Which:{1} Weight:{2}\n************'.format('link', match_term[1], match_term[0]))
 
 		return weight
 
 	def calc_wght_link(self):
-		#2
-		#1.8
-		#1.5
-		#'toto[ \-_]?titi[ \-_]?tutu'
 		weight = 0
 		
 #        self.log('\n::: {0} :::\n'.format(len(self.d_struct_elem['link'])))    
@@ -348,31 +370,66 @@ class QuotesSpider(scrapy.Spider):
 		if not already_in:
 			self.l_new_domain_to_explore.append({'parent': d_url['parent'], 'link': d_url['link'], 'level': d_url['level'], 'domain': d_url['domain']})
 
-	def get_new_domain_to_explore(self)
+	def get_new_domain_to_explore(self):
 		l_domain = []
 
 		for domain in self.l_new_domain_to_explore:
+			if self.in_blacklist(domain['parent']):
+				l_domain.append(domain)
 
 		return l_domain
+
+	def in_blacklist(self, page):
+		if page in self.d_black_list.keys():
+			return True
+		else:
+			return False
+
+	def insert_in_black_list(self, page, weight):
+		nbr_entry_in_black_list = 0
+		weight = 0
+
+		for page, page_info in self.d_black_list.iteritems():
+			nbr_entry_in_black_list +=1
+			weight += page_info['weight']
+
+		if weight:
+			global_black_list_average_weight = weight / nbr_entry_in_black_list
+		else:
+			global_black_list_average_weight = 0
+
+		if weight >= global_black_list_average_weight:
+			self.d_black_list[page] = {'weight': weight}
+		elif weight >= global_black_list_average_weight*0.7 and weight < global_black_list_average_weight:
+			self.d_black_list[page] = {'weight': weight}
+		elif weight >= global_black_list_average_weight*0.4 and weight < global_black_list_average_weight*0.7:
+			self.d_suspicious_list[page] = {'weight': weight}
+		elif weight < global_black_list_average_weight*0.4:
+			#Nothing todo
+			pass
+
+		return
 
 	def parse(self, response):
 
 		d_url = response.meta['d_url']
-#		key = response.meta['key']
 
-#		del self.urls[key]
-
-		self.log('\n\n** --- YESSSS {0} ---- **\n\n'.format(d_url))
+		self.log('\n\n** --- CURRENTLY Parse {0} ---- **\n\n'.format(d_url))
 
 		page = response.url.split("/")
 		page = '//'.join([page[0], page[2]])
+		
+		if page not in self.d_domain_abstract_weight.keys():
+			self.d_domain_abstract_weight[page] =  {'nbr_page': 0, 'sum_wght': 0}
+		
+		self.l_url_already_parse.append(response.url)
+		self.d_domain_abstract_weight[page]['nbr_page'] += 1
 
 		self.d_struct_elem['link'] = response.xpath('//a').extract()
 
 		self.parse_link_join_text_url()
 
 		self.d_struct_elem['link_url'] = response.xpath('//a/@href').extract()
-#        self.d_struct_elem['link_text'] = response.xpath('//a/*|//a/text()').extract() # recupere tous ce qui dans la balise texte ou pas
 		
 		self.d_struct_elem['h1'] = response.xpath('//h1/text()|//h1/*').extract()
 
@@ -403,7 +460,7 @@ class QuotesSpider(scrapy.Spider):
 
 		l_keys = self.d_struct_elem.keys()
 
-#        self.log('************\n{0}\n************'.format(self.d_struct_elem['link_text']))
+#        self.log('\n************\n{0}\n************'.format(self.d_struct_elem['link_text']))
 
 		for key in l_keys:
 			l_value_wo_html_tag = []
@@ -415,79 +472,50 @@ class QuotesSpider(scrapy.Spider):
 			if key != 'link':
 				self.d_struct_elem[key] = l_value_wo_html_tag
 
-#        self.log('************\n{0}\n************'.format(self.d_struct_elem['link_text']))
+#        self.log('\n************\n{0}\n************'.format(self.d_struct_elem['link_text']))
 
-#        self.log('************\n{0} {1}\n************'.format(response.url, self.d_struct_elem))
+#        self.log('\n************\n{0} {1}\n************'.format(response.url, self.d_struct_elem))
 
 		wght_text = self.calc_wght_text()
 		wght_struct = self.calc_wght_struct()
 #        self.log('\n::: {0} \n :::\n'.format(self.d_struct_elem['link']))
 		wght_link = self.calc_wght_link()
 
-		self.log('************\n{0} {1}\n************'.format(response.url, wght_link))
-		self.log('************\n{0} {1}\n************'.format(page, wght_link))
+		self.d_domain_abstract_weight[page]['sum_wght'] += wght_text + wght_struct + wght_link
+
+#		self.log('\n************\n{0} {1}\n************'.format(response.url, wght_link))
+		self.log('\n************\n{0} {1}\n************'.format(page, wght_link))
 
 		for link in self.d_struct_elem['link_url'] :
-			d_url_info = {}
-			if d_url['level'] <= 2 and self.is_current_domain(page, link):
-				d_url_info['parent'] = page
-				d_url_info['link'] = link
-				d_url_info['level'] = d_url['level'] + 1
-				request = scrapy.Request(url=response.urljoin(link), callback=self.parse)
-				request.meta['d_url'] = d_url_info
-				request.meta['key'] = key
-				yield request
-			elif not self.is_current_domain(page, link):
-				domain = link.split("/")
-				domain = '//'.join([domain[0], domain[2]])
-				d_url_info['parent'] = page
-				d_url_info['domain'] = domain
-				d_url_info['link'] = link
-				d_url_info['level'] = 0
-				self.log('************\n{0} {1}\n************'.format('To Other Domain', link))
-				self.insert_into_new_domain_to_explore(d_url_info)
+			if link not in self.l_url_already_parse:
+				d_url_info = {}
+				if d_url['level'] <= 2 and self.is_current_domain(page, link):
+					d_url_info['parent'] = page
+					d_url_info['link'] = link
+					d_url_info['level'] = d_url['level'] + 1
+					request = scrapy.Request(url=response.urljoin(link), callback=self.parse)
+					request.meta['d_url'] = d_url_info
+					request.meta['key'] = key
+					yield request
+				elif not self.is_current_domain(page, link):
+					domain = link.split("/")
+					domain = '//'.join([domain[0], domain[2]])
+					d_url_info['parent'] = page
+					d_url_info['domain'] = domain
+					d_url_info['link'] = link
+					d_url_info['level'] = 0
+					self.log('\n************\n{0} {1}\n************'.format('To Other Domain', link))
+					self.insert_into_new_domain_to_explore(d_url_info)
+				elif d_url['level'] >= 3 and self.in_blacklist(page) == False:
+#					pass
+					average_wght = self.d_domain_abstract_weight[page]['sum_wght'] / self.d_domain_abstract_weight[page]['nbr_page']
+					self.log('\n************\n{0} {1}\n************'.format('Average weight', average_wght))
+					self.insert_in_black_list(page, average_wght)
+					## Calc to insert in black list ##
+					## if ok add in black list ##
 
-		for new_domain in self.get_new_domain_to_explore()
+		for new_domain in self.get_new_domain_to_explore():
 			request = scrapy.Request(url=new_domain['link'], callback=self.parse)
 			request.meta['d_url'] = new_domain
 			request.meta['key'] = key
 			yield request
-
-
-
-'''
-		if select :
-			self.log('************\n{0} {1}\n************'.format(response.url, select))
-
-		
-
-		find = re.search('truth', body)
-
-		if find:
-			self.log('************\n{0} {1}\n************'.format(response.url, find.group(0)))
-
-		body = remove_tags(body)
-
-#####
-## <meta name="description" content="Free Web tutorials">
-## <meta name="keywords" content="HTML,CSS,XML,JavaScript">
-#####
-		
-
-
-		self.log('############\n{0}\n############'.format(meta))
-
-		filename = 'quotes-%s.html' % page
-'''
-#       yield '************\n{0}\n************'.format(link_text)
-#        with open(filename, 'wb') as f:
-#            f.write(body.encode('utf8'))
-#        self.log('************\n{0}\n************'.format(body))
-#        self.log('############\n{0} {1}\n############'.format(response.url, link_url))
-
-'''
-Follow link example
-		if next_page is not None:
-			next_page = response.urljoin(next_page)
-			yield scrapy.Request(next_page, callback=self.parse)
-'''
