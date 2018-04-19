@@ -1,0 +1,36 @@
+*~~~~
+*~ Server Side
+*~~~~
+
+apt-get install pdns-server
+apt-get install pdns-backend-mysql
+apt-get install mysql-server
+
+!!! recursor and server can't be launch on same server because they use same port
+!!! change port of server if you want to
+apt-get install pdns-recursor
+
+MySQL root pass = tgbyhn89?M
+MySQL pdns pass = pdns-tgbyhn89?M
+
+SHOW databases;
+USE pdns;
+
+mysql> INSERT INTO domains (name, type) values ('example.lan', 'NATIVE');
+
+INSERT INTO records (domain_id, name, content, type,ttl,prio)
+VALUES (1,'example.lan','188.108.5.119 admin.example.lan 1 10380 3600 604800 3600','SOA',86400,NULL);
+
+INSERT INTO records (domain_id, name, content, type,ttl,prio)
+VALUES (1,'example.lan','188.108.5.119','NS',86400,NULL);
+
+INSERT INTO records (domain_id, name, content, type,ttl,prio)
+VALUES (1,'www.example.lan','192.0.2.10','A',120,NULL);
+
+INSERT INTO records (domain_id, name, content, type,ttl,prio)
+VALUES (1,'*.example.lan','192.0.2.42','A',120,NULL);
+
+In pdns.conf allow-recursion for LAN Subnet only (ie. 192.168.42.0/24)
+In pdns.conf recursor put DNS recursor which take care of all request the master can't
+In recursor.conf put forward-zone for LAN domain and other for everything else (.lan=1.1.1.1, .=8.8.8.8)
+
