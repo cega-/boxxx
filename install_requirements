@@ -13,13 +13,19 @@ apt-get install pdns-recursor
 MySQL root pass = tgbyhn89?M
 MySQL pdns pass = pdns-tgbyhn89?M
 
+Poweradmin WebUI 
+"admin" and password "pdns-tgbyhn89?M"
+
+user = u_pdns
+pass = u_pdns_pass
+
 SHOW databases;
 USE pdns;
 
 mysql> INSERT INTO domains (name, type) values ('example.lan', 'NATIVE');
 
 INSERT INTO records (domain_id, name, content, type,ttl,prio)
-VALUES (1,'example.lan','188.108.5.119 admin.example.lan 1 10380 3600 604800 3600','SOA',86400,NULL);
+VALUES (1,'example.lan','188.108.5.119 empty.empty 1 3600 600 604800 3600','SOA',86400,NULL);
 
 INSERT INTO records (domain_id, name, content, type,ttl,prio)
 VALUES (1,'example.lan','188.108.5.119','NS',86400,NULL);
@@ -32,5 +38,6 @@ VALUES (1,'*.example.lan','192.0.2.42','A',120,NULL);
 
 In pdns.conf allow-recursion for LAN Subnet only (ie. 192.168.42.0/24)
 In pdns.conf recursor put DNS recursor which take care of all request the master can't
-In recursor.conf put forward-zone for LAN domain and other for everything else (.lan=1.1.1.1, .=8.8.8.8)
+In recursor.conf put forward-zone for LAN domain and other for everything else (lan=192.168.42.1, .=8.8.8.8)
+In recursor.conf, if needed, put forward-zone-recurse everything else statement dispite of forward-zone(.=8.8.8.8)
 
