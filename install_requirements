@@ -2,13 +2,19 @@
 *~ Server Side
 *~~~~
 
+root@nepi-vtu19.neuilly.ratp
+
 apt-get install pdns-server
 apt-get install pdns-backend-mysql
 apt-get install mysql-server
+apt-get install libprotobuf-dev
+apt-get install python python-pip
 
 !!! recursor and server can't be launch on same server because they use same port
 !!! change port of server if you want to
 apt-get install pdns-recursor
+
+pip install mysql-connector
 
 MySQL root pass = tgbyhn89?M
 MySQL pdns pass = pdns-tgbyhn89?M
@@ -21,6 +27,24 @@ pass = u_pdns_pass
 
 SHOW databases;
 USE pdns;
+
+CREATE TABLE domains_tmp (
+  id                    INT AUTO_INCREMENT,
+  name                  VARCHAR(255) NOT NULL,
+  master                VARCHAR(128) DEFAULT NULL,
+  last_check            INT DEFAULT NULL,
+  type                  VARCHAR(6) NOT NULL,
+  notified_serial       INT DEFAULT NULL,
+  account               VARCHAR(40) DEFAULT NULL,
+  PRIMARY KEY (id)
+) Engine=InnoDB;
+
+CREATE UNIQUE INDEX name_index ON domains_tmp(name);
+
+SELECT dt.name from domains dt
+LEFT JOIN domains d
+ON dt.name = d.name
+WHERE d.name IS NULL;
 
 mysql> INSERT INTO domains (name, type) values ('example.lan', 'NATIVE');
 
