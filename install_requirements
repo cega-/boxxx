@@ -61,7 +61,38 @@ INSERT INTO records (domain_id, name, content, type,ttl,prio)
 VALUES (1,'*.example.lan','192.0.2.42','A',120,NULL);
 
 In pdns.conf allow-recursion for LAN Subnet only (ie. 192.168.42.0/24)
-In pdns.conf recursor put DNS recursor which take care of all request the master can't
+In pdns.conf recursor put DNS recursor which take care of all request the master can't (usually local powerdns in recursor mode on port 54)
 In recursor.conf put forward-zone for LAN domain and other for everything else (lan=192.168.42.1, .=8.8.8.8)
 In recursor.conf, if needed, put forward-zone-recurse everything else statement dispite of forward-zone(.=8.8.8.8)
 
+#####
+## Boxxx Firewall redirect
+#####
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+iptables -t nat -A POSTROUTING -j MASQUERADE
+iptables -t nat -A PREROUTING -j DNAT -p tcp --dport 53 --to-destination 127.0.0.1:53
+iptables -t nat -A PREROUTING -j DNAT -p udp --dport 53 --to-destination 127.0.0.1:53
+
+iptables -A FORWARD -p tcp --dport 53 -j ACCEPT
+iptables -A FORWARD -p udp --dport 53 -j ACCEPT
+
+iptables -L -n -v -t nat
+iptables -L -n -v
+iptables -F -t nat
+iptables -F
+
+echo 1 > /proc/sys/net/ipv6/conf/default/forwarding
+echo 1 > /proc/sys/net/ipv6/conf/all/forwarding
+
+ip6tables -t nat -A POSTROUTING -j MASQUERADE
+ip6tables -t nat -A PREROUTING -j DNAT -p tcp --dport 53 --to-destination 127.0.0.1:53
+ip6tables -t nat -A PREROUTING -j DNAT -p udp --dport 53 --to-destination 127.0.0.1:53
+
+ip6tables -A FORWARD -p tcp --dport 53 -j ACCEPT
+ip6tables -A FORWARD -p udp --dport 53 -j ACCEPT
+
+ip6tables -L -n -v -t nat
+ip6tables -L -n -v
+ip6tables -F -t nat
+ip6tables -F
