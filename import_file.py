@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import getopt
 import mysql.connector
+import sys
+
 from mysql.connector import errorcode
 
 '''
@@ -14,6 +17,59 @@ with open(filepath) as fp:
 		line = fp.readline()
 		cnt += 1
 '''
+
+def create_dns_entry(domain_name, cur, cnx):
+## Add domain
+	domain_data = {'domain_name': domain_name, 'type': 'NATIVE'}
+	cur.execute(add_domain, domain_data)
+	domain_id = cur.lastrowid
+
+## Declare SOA
+	soa_entry = 'ns.{0} empty.empty 1 3600 600 604800 3600'.format(domain_name)
+	records_data = {'domain_id': domain_id, 'domain_name': domain_name, 'records_content': soa_entry, 'records_type': 'SOA'}
+	cur.execute(add_records, records_data)
+
+## Declare NS
+	ns_entry = 'ns.{0}'.format(domain_name)
+	records_data = {'domain_id': domain_id, 'domain_name': domain_name, 'records_content': ns_entry, 'records_type': 'NS'}
+	cur.execute(add_records, records_data)
+
+## Declare A for NS
+	a_entry = ip_boxxx
+	records_data = {'domain_id': domain_id, 'domain_name': 'ns.{0}'.format(domain_name), 'records_content': a_entry, 'records_type': 'A'}
+	cur.execute(add_records, records_data)
+
+## Declare A for domain
+	a_entry = ip_boxxx
+	records_data = {'domain_id': domain_id, 'domain_name': '{0}'.format(domain_name), 'records_content': a_entry, 'records_type': 'A'}
+	cur.execute(add_records, records_data)
+
+## Declare A for *.domain
+	a_entry = ip_boxxx
+	records_data = {'domain_id': domain_id, 'domain_name': '*.{0}'.format(domain_name), 'records_content': a_entry, 'records_type': 'A'}
+	cur.execute(add_records, records_data)
+
+	cnx.commit()
+
+def main(argv):                         
+	try:                     
+		opts, args = getopt.getopt(argv, "hf:", ["help", "file="])
+	except getopt.GetoptError:
+		usage()
+		sys.exit(2)
+
+	for opt, arg in opts:
+		if opt in ("-h", "--help"):
+			usage()    
+			sys.exit()
+		elif opt in ("-f", "--file"):
+			global filepath
+			filepath = arg
+
+filepath = '/tmp/adult/domains.ori'
+
+if __name__ == "__main__":
+	main(sys.argv[1:])
 
 config = {
 	'user': 'pdns',
@@ -56,15 +112,12 @@ else:
 	filepath = '/tmp/adult/domains.ori'
 	with open(filepath) as fp:  
 		line = fp.readline()
-		cnt = 1
 		while line:
-##			print("Line {}: {}".format(cnt, line.strip()))
 			domain_name = line.strip()
 			domain_data = {'domain_name': domain_name, 'type': 'NATIVE'}
 			cur.execute(add_domain_tmp, domain_data)
 
 			line = fp.readline()
-			cnt += 1
 
 		cnx.commit()
 
@@ -73,7 +126,8 @@ else:
 	)
 
 	for row in cur.fetchall():
-		print(row)
+		if row[0]:
+			create_dns_entry(row[0], cur, cnx)
 
 	cur.execute('show databases;')
 	for row in cur.fetchall():
