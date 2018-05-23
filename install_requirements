@@ -1,5 +1,19 @@
 *~~~~
-*~ Server Side
+*~ Boxxx Portal
+*~~~~
+
+apt-get install python python-pip
+
+pip install bottle
+Download https://github.com/bottlepy/bottle/raw/master/bottle.py
+Replace bottle.py install with PIP by the download previously
+
+pip install beaker
+pip install cheroot
+pip install setproctitle
+
+*~~~~
+*~ DNS Server Side
 *~~~~
 
 root@nepi-vtu19.neuilly.ratp

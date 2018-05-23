@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import argparse
 import getopt
 import mysql.connector
 import sys
