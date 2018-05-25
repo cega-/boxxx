@@ -16,7 +16,7 @@ from os import listdir
 from os.path import isfile, join
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-iconf = ag_conf_class.ConfClass('{0}/boxxx_portal.conf'.format(dir_path))
+iconf = boxxx_conf_class.ConfClass('{0}/boxxx_portal.conf'.format(dir_path))
 Conf = iconf.conf
 
 session_opts = {

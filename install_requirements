@@ -2,7 +2,7 @@
 *~ Boxxx Portal
 *~~~~
 
-apt-get install python python-pip
+apt-get install python python-dev python-pip
 
 pip install bottle
 Download https://github.com/bottlepy/bottle/raw/master/bottle.py
@@ -10,6 +10,7 @@ Replace bottle.py install with PIP by the download previously
 
 pip install beaker
 pip install cheroot
+pip install jinja2
 pip install setproctitle
 
 *~~~~
@@ -110,3 +111,58 @@ ip6tables -L -n -v -t nat
 ip6tables -L -n -v
 ip6tables -F -t nat
 ip6tables -F
+
+############
+## Translate and Template
+############
+
+xgettext -L Python -d gettext_example -o gettext_example.pot test_i18n.py
+
+cp gettext_example.pot translation/fr/LC_MESSAGES/gettext_example.po
+
+edit .po file
+
+msgfmt -o translation/fr/LC_MESSAGES/gettext_example.mo translation/fr/LC_MESSAGES/gettext_example.po
+
+{% extends "im_frame.tpl" %}
+
+	{% block menu %}
+		{% include 'im_menu.tpl' %}
+	{% endblock menu %}
+	{% block container %}
+
+<textarea id="use_template_list" name="use_template_list" style="display:none">
+{{ use_template_list }}
+</textarea>
+<textarea id="parents_list" name="parents_list" style="display:none">
+{{ parents_list }}
+</textarea>
+<textarea id="group_list" name="group_list" style="display:none">
+{{ group_list }}
+</textarea>
+<textarea id="supervisor_name_arg" name="supervisor_name_arg" style="display:none">
+{{ supervisor_name_arg }}
+</textarea>
+
+<input id="addtype" type="hidden" name="addtype" value="{{ addtype }}" />
+<input id="oid" type="hidden" name="oid" value="{{ oid }}" />
+<input id="conf_filepath" type="hidden" name="conf_filepath" value="{{ conf_filepath }}" />
+
+<div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">{{ _('Host definition for : ') }}{{ page_header_name }}</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <!-- /.panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-desktop fa-fw"></i> {{ _('Host info') }}
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
