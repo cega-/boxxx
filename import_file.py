@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import getopt
 import mysql.connector
 import sys
 
@@ -18,6 +17,9 @@ with open(filepath) as fp:
 		line = fp.readline()
 		cnt += 1
 '''
+
+filepath = ''
+file_type_bind = False
 
 def create_dns_entry(domain_name, cur, cnx):
 ## Add domain
@@ -52,22 +54,21 @@ def create_dns_entry(domain_name, cur, cnx):
 
 	cnx.commit()
 
-def main(argv):                         
-	try:                     
-		opts, args = getopt.getopt(argv, "hf:", ["help", "file="])
-	except getopt.GetoptError:
-		usage()
-		sys.exit(2)
+def main(argv):
 
-	for opt, arg in opts:
-		if opt in ("-h", "--help"):
-			usage()    
-			sys.exit()
-		elif opt in ("-f", "--file"):
-			global filepath
-			filepath = arg
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-b', '--bind_file', help='File format to import is BIND', action='store_true')
+	parser.add_argument('file_to_import', help='Path to file to import')
+	args = parser.parse_args()
 
-filepath = '/tmp/adult/domains.ori'
+	global filepath
+	filepath = args.file_to_import
+
+	if args.bind_file:
+		global file_type_bind
+		file_type_bind = True
+
+#filepath = '/tmp/adult/domains.ori'
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
@@ -110,13 +111,21 @@ else:
 	cur.execute('TRUNCATE TABLE domains_tmp')
 	cnx.commit()
 
-	filepath = '/tmp/adult/domains.ori'
+#	filepath = '/tmp/adult/domains.ori'
 	with open(filepath) as fp:  
 		line = fp.readline()
 		while line:
-			domain_name = line.strip()
-			domain_data = {'domain_name': domain_name, 'type': 'NATIVE'}
-			cur.execute(add_domain_tmp, domain_data)
+
+			if file_type_bind == True:
+				domain_name = re.findall('^zone\s\"(.*)\"\sIN\s{', line, re.I)
+				if domain_name :
+					domain_name = domain_name[0]
+			else:
+				domain_name = line.strip()
+			
+			if domain_name:
+				domain_data = {'domain_name': domain_name, 'type': 'NATIVE'}
+				cur.execute(add_domain_tmp, domain_data)
 
 			line = fp.readline()
 
