@@ -68,8 +68,6 @@ def main(argv):
 		global file_type_bind
 		file_type_bind = True
 
-#filepath = '/tmp/adult/domains.ori'
-
 if __name__ == "__main__":
 	main(sys.argv[1:])
 
@@ -111,7 +109,6 @@ else:
 	cur.execute('TRUNCATE TABLE domains_tmp')
 	cnx.commit()
 
-#	filepath = '/tmp/adult/domains.ori'
 	with open(filepath) as fp:  
 		line = fp.readline()
 		while line:

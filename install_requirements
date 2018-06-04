@@ -13,6 +13,16 @@ pip install cheroot
 pip install jinja2
 pip install setproctitle
 
+
+apt-get install curl
+curl -sL https://deb.nodesource.com/setup_8.x | bash -
+apt-get install gcc g++ make nodejs
+npm install request cheerio nightmare fs
+npm install -g browserify
+browserify webworker_test.js -o bundle.js
+
+L'appel du worker se fait donc à ce moment la avec l'appel du bundle
+
 *~~~~
 *~ DNS Server Side
 *~~~~

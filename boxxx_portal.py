@@ -60,10 +60,10 @@ try:
 	app = boxxx.default_app()
 	app = SessionMiddleware(app, session_opts)
 
-	t = gettext.translation('boxxx', 'translation', ['fr'], fallback=False)
-	_ = t.ugettext
+#	t = gettext.translation('boxxx', 'translation', ['fr'], fallback=False)
+#	_ = t.ugettext
 	env = Environment(loader=FileSystemLoader('{0}/templates'.format(dir_path)), extensions=['jinja2.ext.i18n'])
-	env.install_gettext_translations(t)
+#	env.install_gettext_translations(t)
 	l_templates = env.list_templates(extensions=['tpl'])
 	
 except Exception, e:
@@ -74,6 +74,10 @@ def jsonp(request, dictionary):
 	if (request.query.callback):
 		return "%s(%s)" % (request.query.callback, json.dumps(dictionary))
 	return json.dumps(dictionary)
+
+@boxxx.route('/web/<filepath:path>')
+def server_static(filepath):
+	return static_file(filepath, root='web/')
 
 @boxxx.post('/im_get_doc_freeradius')
 @boxxx.get('/im_get_doc_freeradius')
@@ -96,19 +100,14 @@ def A_getDoc_freeradius():
 	return jsonp(request, val_ret)
 
 
-@boxxx.post('/im_client_freeradius')
-@boxxx.get('/im_client_freeradius')
+@boxxx.post('/')
+@boxxx.get('/')
 def W_client_freeradius():
-	global env
 
-	verif_session()
-
-	plugin_list = getUserSessionPluginList()
-
-	d_render = {'page_title': 'Boxxx - Configuration management tool', 'plugin_list': plugin_list}
+	d_render = {'page_title': 'Boxxx - Configuration management tool', 'plugin_list': 'toto'}
 
 	response.content_type = 'text/html'
-	OTemplate = env.get_template('im_client_freeradius.tpl')
+	OTemplate = env.get_template('template_content_sample.tpl')
 
 	return OTemplate.render(d_render)
 
