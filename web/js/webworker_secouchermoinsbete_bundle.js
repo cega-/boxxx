@@ -48,22 +48,15 @@ var content = '';
 
 load('http://allorigins.me/get?url=' + encodeURIComponent('http://secouchermoinsbete.fr/') + '&callback=?', function(xhr) {
 	
-	console.log('Retour Se Coucher');
 	var result_html = xhr.responseText;
 	html_content = JSON.parse(result_html.substring(27, result_html.length - 2))['contents'];
 
 	const $ = cheerio.load(html_content)
 
-	console.log('*****');
-//	console.log($.html());
-//	console.log($('.summary').first().children('a').text());
-//	console.log($('.summary').first().children('a').attr('href'));
 	content = $('.summary').first().children('a').text();
 	href = $('.summary').first().children('a').attr('href');
-	console.log('*****');
 
 	const result = {'href': href, 'content': content};
-	console.log('Send');
 	self.postMessage(result);
 });
 

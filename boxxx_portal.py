@@ -100,11 +100,24 @@ def A_getDoc_freeradius():
 	return jsonp(request, val_ret)
 
 
+def get_user_widget():
+	ret = []
+	
+	#Jinja widget template name
+
+	#Handlebars widget template name
+
+	#Worker getter name
+
+	return ret
+
 @boxxx.post('/')
 @boxxx.get('/')
-def W_client_freeradius():
+def W_index():
 
-	d_render = {'page_title': 'Boxxx - Configuration management tool', 'plugin_list': 'toto'}
+	list_widget = get_user_widget()
+
+	d_render = {'page_title': 'Boxxx - Configuration management tool', 'var_var': ['menu.tpl'], 'list_widget' : list_widget}
 
 	response.content_type = 'text/html'
 	OTemplate = env.get_template('template_content_sample.tpl')

@@ -4,6 +4,7 @@
 import argparse
 import mysql.connector
 import sys
+import re
 
 from mysql.connector import errorcode
 

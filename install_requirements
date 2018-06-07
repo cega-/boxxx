@@ -19,9 +19,30 @@ curl -sL https://deb.nodesource.com/setup_8.x | bash -
 apt-get install gcc g++ make nodejs
 npm install request cheerio nightmare fs
 npm install -g browserify
-browserify webworker_test.js -o bundle.js
+npm install handlebars
+get http://builds.handlebarsjs.com.s3.amazonaws.com/handlebars.runtime-v*.*.*.js
+and put in web/js/lib
+
+In webworker_test.js
+const cheerio = require('cheerio')
+
+Browserify WebWorker to include Cheerio inside :
+browserify webworker_test.js -o webworker_test_bundle.js
 
 L'appel du worker se fait donc à ce moment la avec l'appel du bundle
+const worker = new Worker('/web/js/webworker_test_bundle.js');
+
+Put nom_du_template in git/web/handle_tpl/
+/root/boxxx/node_modules/handlebars/bin/handlebars -m git/web/handle_tpl/nom_du_template.handlebars -f web/js/templates/nom_du_template.js
+
+<script src="web/js/lib/handlebars.runtime-v4.0.11.js"></script>
+<script src="web/js/templates/nom_du_template.js"></script>
+<script src="web/js/widgets/widget_nom_du_template.js"></script>
+
+Inside page_dest_template_content.js :
+var context = {title: "My New Post", body: "This is my first post!"};
+var template = Handlebars.templates['nom_du_template'];
+var html = template(context);
 
 *~~~~
 *~ DNS Server Side

@@ -1,18 +1,15 @@
 $(document).ready(function() {
 
-	const worker = new Worker('/web/js/bundle.js'); // create our worker
+	const worker = new Worker('/web/js/webworker_secouchermoinsbete_bundle.js'); // create our worker
 	worker.postMessage({ firstNum: 4, secondNum: 6 }); // post a message to our worker
 
 	worker.onmessage = event => { // listen for events from the worker
 		//console.log(`Result is: ${event.data}`);
 		console.log(event.data);
-		var context = {title: "My New Post", body: event.data['content']};
-		var template = Handlebars.templates['test'];
+		var context = {secouchermoinsbete_content: event.data['content']};
+		var template = Handlebars.templates['secouchermoinsbete'];
 		var html = template(context);
 
-		console.log(html);
+		$('#widget_secouchermoinsbete').append(html);
 	};
-
-	
-
 });
