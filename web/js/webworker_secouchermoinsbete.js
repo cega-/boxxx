@@ -58,4 +58,3 @@ load('http://allorigins.me/get?url=' + encodeURIComponent('http://secouchermoins
 	const result = {'href': href, 'content': content};
 	self.postMessage(result);
 });
-

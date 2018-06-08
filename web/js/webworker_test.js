@@ -1,6 +1,4 @@
-// webworker.js
 const cheerio = require('cheerio')
-
 
 function load(url, callback) {
 	var xhr;
@@ -42,35 +40,30 @@ function load(url, callback) {
 	xhr.open('GET', url, true);
 	xhr.send('');
 }
+
+var html_content = '';
+var href = '';
+var content = '';
+
+load('http://allorigins.me/get?url=' + encodeURIComponent('https://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Accueil_principal') + '&callback=?', function(xhr) {
 	
-//and here is how you use it to load a json file with ajax
+	var result_html = xhr.responseText;
+	var content_day_article = '';
+	html_content = JSON.parse(result_html.substring(27, result_html.length - 2))['contents'];
 
+	const $ = cheerio.load(html_content)
 
+	img_day_article = $('#Article_labellisé_du_jour').parent().next().find('img').attr('src');
 
-self.onmessage = event => { // listen for messages from the main thread
-	console.log('Worker received event from main thread..');
-	const result = event.data.firstNum + event.data.secondNum;
-var result_html = '';
-load('http://www.google.com', function(xhr) {	
-	result_html = xhr.responseText;	
-});
+	$('#Article_labellisé_du_jour').parent().parent().find('p').each(function(index, val){
+		$(val).find('a').each(function(){
+			ori_href = $( this ).attr('href');
+			$( this ).attr('href', "https://fr.wikipedia.org" + ori_href);
+		});
+		content_day_article += $(val).html();
+	});
 
-const $ = cheerio.load(result_html)
-
-console.log('*****');
-console.log($.html());
-console.log('*****');
-
-var companiesList = [];
-
-// For each .item, we add all the structure of a company to the companiesList array
-// Don't try to understand what follows because we will do it differently.
-$('p').each(function(index, element){
-	companiesList[index] = {};
-	console.log(element);
-});
-
-
-
+	console.log(content_day_article);
+	const result = {'img_day_article': img_day_article, 'content_day_article': content_day_article};
 	self.postMessage(result);
-};
+});

@@ -120,7 +120,7 @@ def W_index():
 	d_render = {'page_title': 'Boxxx - Configuration management tool', 'var_var': ['menu.tpl'], 'list_widget' : list_widget}
 
 	response.content_type = 'text/html'
-	OTemplate = env.get_template('template_content_sample.tpl')
+	OTemplate = env.get_template('index.tpl')
 
 	return OTemplate.render(d_render)
 
@@ -135,7 +135,14 @@ def test():
 	s['test'] = s.get('test',0) + 1
 	s.save()
 
-	return 'Test counter: %d' % s['test']
+	counter_test = 'Test counter: %d' % s['test']
+
+	d_render = {'page_title': 'Boxxx - Configuration management tool', 'counter_test': counter_test}
+
+	response.content_type = 'text/html'
+	OTemplate = env.get_template('template_content_sample.tpl')
+
+	return OTemplate.render(d_render)
 
 
 try:

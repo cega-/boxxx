@@ -1,7 +1,8 @@
 {% extends "frame.tpl" %}
 
 	{% block menu %}
-		{% include 'menu.tpl' %}
+		{# include 'menu.tpl' #}
+		{% include '%s' % var_var[0] %}
 	{% endblock menu %}
 		
 	{% block container %}
@@ -71,7 +72,7 @@
 						</div>
 						<div class="col-lg-12">
 							<div class="news-tracker-wrap">
-								<h6><span>Breaking News:</span>   <a href="#">Astronomy Binoculars A Great Alternative {{counter_test}}</a></h6>
+								<h6><span>Breaking News:</span>   <a href="#">Astronomy Binoculars A Great Alternative</a></h6>
 							</div>
 						</div>
 					</div>
@@ -86,7 +87,7 @@
 							<!-- Start latest-post Area -->
 							<div class="latest-post-wrap">
 								<h4 class="cat-title">Latest News</h4>
-								<div id="widget_test" class="single-latest-post row align-items-center">
+								<div id="widget_secouchermoinsbete" class="single-latest-post row align-items-center">
 									<div class="col-lg-5 post-left">
 										<div class="feature-img relative">
 											<div class="overlay overlay-bg"></div>
@@ -568,7 +569,7 @@
 		{% include 'js.tpl' %}
 <!--		<script src="web/js/lib/handlebars.js" type="module"></script> -->
 		<script src="web/js/lib/handlebars.runtime-v4.0.11.js"></script>
-		<script src="web/js/templates/test_template.js"></script>
-		<script src="web/js/widgets/widget_test.js"></script>
+		<script src="web/js/templates/secouchermoinsbete.js"></script>
+		<script src="web/js/widgets/widget_secouchermoinsbete.js"></script>
 	{% endblock js %}
 
