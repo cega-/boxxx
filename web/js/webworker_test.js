@@ -63,7 +63,40 @@ load('http://allorigins.me/get?url=' + encodeURIComponent('https://fr.wikipedia.
 		content_day_article += $(val).html();
 	});
 
-	console.log(content_day_article);
-	const result = {'img_day_article': img_day_article, 'content_day_article': content_day_article};
+	var know_more_article = '';
+	ori_href = $('#Article_labellisé_du_jour').parent().parent().children('ul').find('a').attr('href');
+	know_more_article = $('#Article_labellisé_du_jour').parent().parent().children('ul').find('a').attr('href', "https://fr.wikipedia.org" + ori_href);
+	var href_view_more = know_more_article.attr('href');
+
+
+	var content_news = '<ul>';
+	$('#Actualités').parent().parent().children('ul').children('li').each(function(index, val){
+		$(val).find('a').each(function(){
+			ori_href = $( this ).attr('href');
+			$( this ).attr('href', "https://fr.wikipedia.org" + ori_href);
+		});
+		content_news += '<li>'+$(val).html()+'</li>';
+	});
+	content_news += '</ul>'
+
+	console.log(content_news);
+
+
+	var content_do_you_know = '<ul>';
+	console.log($('[id^=Le_saviez-vous]'));
+	$('[id^=Le_saviez-vous]').parent().parent().children('ul').children('li').each(function(index, val){
+		$(val).find('a').each(function(){
+			ori_href = $( this ).attr('href');
+			$( this ).attr('href', "https://fr.wikipedia.org" + ori_href);
+		});
+		content_do_you_know += '<li>'+$(val).html()+'</li>';
+	});
+	content_do_you_know += '</ul>'
+
+	console.log(content_do_you_know);
+
+
+//	console.log(content_day_article);
+	const result = {'img_day_article': img_day_article, 'content_day_article': content_do_you_know, 'href_view_more': href_view_more};
 	self.postMessage(result);
 });
