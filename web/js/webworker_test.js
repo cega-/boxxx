@@ -60,7 +60,7 @@ load('http://allorigins.me/get?url=' + encodeURIComponent('https://fr.wikipedia.
 			ori_href = $( this ).attr('href');
 			$( this ).attr('href', "https://fr.wikipedia.org" + ori_href);
 		});
-		content_day_article += $(val).html();
+		content_day_article += '<p>'+$(val).html()+'</p>';
 	});
 
 	var know_more_article = '';
@@ -77,9 +77,9 @@ load('http://allorigins.me/get?url=' + encodeURIComponent('https://fr.wikipedia.
 		});
 		content_news += '<li>'+$(val).html()+'</li>';
 	});
-	content_news += '</ul>'
+	content_news += '</ul>';
 
-	console.log(content_news);
+//	console.log(content_news);
 
 
 	var content_do_you_know = '<ul>';
@@ -91,12 +91,36 @@ load('http://allorigins.me/get?url=' + encodeURIComponent('https://fr.wikipedia.
 		});
 		content_do_you_know += '<li>'+$(val).html()+'</li>';
 	});
-	content_do_you_know += '</ul>'
+	content_do_you_know += '</ul>';
 
-	console.log(content_do_you_know);
+//	console.log(content_do_you_know);
+
+	var content_ephemeris = '<ul>';
+	var content_ephemeris_title = $('[id^=Éphéméride_du_]').text();
+	$('[id^=Éphéméride_du_]').parent().parent().children('ul').children('li').each(function(index, val){
+		$(val).find('a').each(function(){
+			ori_href = $( this ).attr('href');
+			$( this ).attr('href', "https://fr.wikipedia.org" + ori_href);
+		});
+		content_ephemeris += '<li>'+$(val).html()+'</li>';
+	});
+	content_ephemeris += '</ul>';
+
+//	console.log(content_ephemeris);
+
+	var picture_of_the_day = '';
+	$('#Image_labellisée_du_jour').parent().parent().children('div').children('div').each(function(index, val){
+		$(val).find('a').each(function(){
+			ori_href = $( this ).attr('href');
+			$( this ).attr('href', "https://fr.wikipedia.org" + ori_href);
+		});
+		picture_of_the_day += '<div>'+$(val).html()+'</div>';
+	});
+
+	console.log(picture_of_the_day);
 
 
 //	console.log(content_day_article);
-	const result = {'img_day_article': img_day_article, 'content_day_article': content_do_you_know, 'href_view_more': href_view_more};
+	const result = {'img_day_article': img_day_article, 'content_day_article': content_day_article, 'href_view_more': href_view_more};
 	self.postMessage(result);
 });

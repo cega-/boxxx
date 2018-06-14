@@ -7,12 +7,13 @@ $(document).ready(function() {
 		//console.log(`Result is: ${event.data}`);
 		console.log(event.data);
 		var content_day_article = event.data['content_day_article'];
+		var img_day_article = event.data['img_day_article'];
 
-		var context = {test_content: event.data['content_day_article']};
+		var context = {test_content: content_day_article, test_content_img: img_day_article};
 		var template = Handlebars.templates['test_template'];
 		var html = template(context);
 
-		console.log(html)
+		console.log(img_day_article)
 
 		$('#widget_test').append(html);
 

@@ -103,7 +103,7 @@ body {
 ol, ul {
   margin: 0;
   padding: 0;
-  list-style: none;
+/*  list-style: none;*/
 }
 
 select {
@@ -1681,9 +1681,13 @@ body {
 }
 
 .latest-post-area .latest-post-wrap .single-latest-post .tags {
-  position: absolute;
+/*  position: absolute;
   bottom: 10px;
   left: 30px;
+*/
+  position: relative;
+  bottom: 40px;
+  left: 15px;
 }
 
 .latest-post-area .latest-post-wrap .single-latest-post .tags li {

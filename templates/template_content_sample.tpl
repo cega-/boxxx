@@ -86,7 +86,7 @@
 							<!-- Start latest-post Area -->
 							<div class="latest-post-wrap">
 								<h4 class="cat-title">Latest News</h4>
-								<div id="widget_test" class="single-latest-post row align-items-center">
+								<div id="widget_test" class="single-latest-post row">
 									<div class="col-lg-5 post-left">
 										<div class="feature-img relative">
 											<div class="overlay overlay-bg"></div>
