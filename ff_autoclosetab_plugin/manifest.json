@@ -1,0 +1,20 @@
+{
+
+  "description": "Active protection system to close tabs automatically in case of inapropriate content",
+  "manifest_version": 2,
+  "name": "Boxxx - Active protect",
+  "version": "1.0",
+  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/borderify",
+
+  "background": {
+    "scripts": ["autoclose_background.js"]
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.mozilla.org/*"],
+      "js": ["black_list.js", "ff_autoclosetab_plugin.js"]
+    }
+  ]
+
+}

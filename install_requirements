@@ -45,6 +45,19 @@ var template = Handlebars.templates['nom_du_template'];
 var html = template(context);
 
 *~~~~
+*~ Boxxx Plugin
+*~~~~
+
+To install an extension temporarily:
+
+    open Firefox
+    enter "about:debugging" in the URL bar
+    click "Load Temporary Add-on"
+    open the extension's directory and select any file inside the extension.
+
+
+
+*~~~~
 *~ DNS Server Side
 *~~~~
 
