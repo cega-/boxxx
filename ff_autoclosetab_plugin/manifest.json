@@ -14,7 +14,8 @@
     {
       "all_frames": true,
       "matches":["<all_urls>"],
-      "js": ["black_list.js", "ff_autoclosetab_plugin.js"]
+      "js": ["black_list.js", "ff_autoclosetab_plugin.js"],
+      "run_at": "document_end"
     }
   ]
 
