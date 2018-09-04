@@ -1,3 +1,13 @@
+/*
+browser.runtime.sendMessage({func: 'getBlacklist', closeThis: false});
+
+browser.runtime.onMessage.addListener(notify);
+
+function notify(message) {
+	console.log(JSON.parse(message));
+}
+*/
+
 function match_complex_tag(l_complex, page_text_content, weight)
 {
 	var global_weight = 0;
