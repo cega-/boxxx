@@ -51,7 +51,37 @@ function match_simple_tag(l_simple, page_text_content, weight)
 	return global_weight;
 }
 
+function stripScripts(s)
+{
+	var div = document.createElement('div');
+	div.innerHTML = s;
+	var scripts = div.getElementsByTagName('script');
+	var i = scripts.length;
+	while (i--)
+	{
+		scripts[i].parentNode.removeChild(scripts[i]);
+	}
+	return div.innerHTML;
+}
+
+function stripStyles(s)
+{
+	var div = document.createElement('div');
+	div.innerHTML = s;
+	var scripts = div.getElementsByTagName('style');
+	var i = scripts.length;
+	while (i--)
+	{
+		scripts[i].parentNode.removeChild(scripts[i]);
+	}
+	return div.innerHTML;
+}
+
 var page_weight = 0;
+//stripScripts();
+console.log('***------****');
+console.log(stripStyles(stripScripts(document.documentElement.innerHTML)));
+console.log('***------****');
 var page_text_content = document.body.textContent.replace(/\s{2,}|\n/gi, ' ');
 
 page_weight += match_complex_tag(l_100_complex, page_text_content, 100);

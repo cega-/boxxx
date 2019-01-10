@@ -44,6 +44,12 @@ var context = {title: "My New Post", body: "This is my first post!"};
 var template = Handlebars.templates['nom_du_template'];
 var html = template(context);
 
+Pour l'interrogation des pages Web depuis lesquelles on recupere les data, il faut prendre en compte la problematique de CORS
+https://github.com/Rob--W/cors-anywhere/
+https://gist.github.com/jesperorb/6ca596217c8dfba237744966c2b5ab1e
+ou
+Faire un serveur dedie pour faire office de proxy
+
 *~~~~
 *~ Boxxx Plugin
 *~~~~

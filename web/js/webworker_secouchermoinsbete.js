@@ -45,10 +45,14 @@ var html_content = '';
 var href = '';
 var content = '';
 
-load('http://allorigins.me/get?url=' + encodeURIComponent('http://secouchermoinsbete.fr/') + '&callback=?', function(xhr) {
+//load('http://allorigins.me/get?url=' + encodeURIComponent('http://secouchermoinsbete.fr/') + '&callback=?', function(xhr) {
+load('https://cors-anywhere.herokuapp.com/http://secouchermoinsbete.fr/', function(xhr) {
 	
 	var result_html = xhr.responseText;
-	html_content = JSON.parse(result_html.substring(27, result_html.length - 2))['contents'];
+
+	//html_content = JSON.parse(result_html.substring(27, result_html.length - 2))['contents'];
+	html_content = result_html.substring(27, result_html.length - 2);
+	console.log(html_content);
 
 	const $ = cheerio.load(html_content)
 
@@ -56,5 +60,6 @@ load('http://allorigins.me/get?url=' + encodeURIComponent('http://secouchermoins
 	href = $('.summary').first().children('a').attr('href');
 
 	const result = {'href': href, 'content': content};
+
 	self.postMessage(result);
 });
