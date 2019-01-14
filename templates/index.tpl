@@ -71,7 +71,12 @@
 							</div>
 						</div>
 						<div class="col-lg-12">
-							<div class="news-tracker-wrap">
+							<div id="widget_breaking_news" class="news-tracker-wrap">
+								<h6><span>Breaking News:</span>   <a href="#">Astronomy Binoculars A Great Alternative</a></h6>
+							</div>
+						</div>
+						<div class="col-lg-12">
+							<div id="widget_main_quote" class="news-tracker-wrap">
 								<h6><span>Breaking News:</span>   <a href="#">Astronomy Binoculars A Great Alternative</a></h6>
 							</div>
 						</div>
@@ -569,7 +574,20 @@
 		{% include 'js.tpl' %}
 <!--		<script src="web/js/lib/handlebars.js" type="module"></script> -->
 		<script src="web/js/lib/handlebars.runtime-v4.0.11.js"></script>
+		<!-- Widget secouchermoinsbete -->
 		<script src="web/js/templates/secouchermoinsbete.js"></script>
 		<script src="web/js/widgets/widget_secouchermoinsbete.js"></script>
+
+		<!-- Widget abc_citations -->
+		<script src="web/js/templates/abc_citations.js"></script>
+		<script src="web/js/widgets/widget_abc_citations.js"></script>
+
+		<!-- Widget mon_poeme_proverbe -->
+		<script src="web/js/templates/mon_poeme_proverbe.js"></script>
+		<script src="web/js/widgets/widget_mon_poeme_proverbe.js"></script>
+
+		<!-- Widget france24_infocontinu -->
+		<script src="web/js/templates/france24_infocontinu.js"></script>
+		<script src="web/js/widgets/widget_france24_infocontinu.js"></script>
 	{% endblock js %}
 
