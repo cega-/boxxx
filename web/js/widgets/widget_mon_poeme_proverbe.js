@@ -10,6 +10,6 @@ $(document).ready(function() {
 		var template = Handlebars.templates['mon_poeme_proverbe'];
 		var html = template(context);
 
-		$('#widget_main_quote').append(html);
+		$('#widget_proverbe').append(html);
 	};
 });

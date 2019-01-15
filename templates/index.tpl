@@ -75,9 +75,14 @@
 								<h6><span>Breaking News:</span>   <a href="#">Astronomy Binoculars A Great Alternative</a></h6>
 							</div>
 						</div>
-						<div class="col-lg-12">
-							<div id="widget_main_quote" class="news-tracker-wrap">
-								<h6><span>Breaking News:</span>   <a href="#">Astronomy Binoculars A Great Alternative</a></h6>
+						<div class="col-lg-6">
+							<div id="widget_quote" class="news-tracker-wrap">
+								
+							</div>
+						</div>
+						<div class="col-lg-6">
+							<div id="widget_proverbe" class="news-tracker-wrap">
+								
 							</div>
 						</div>
 					</div>
@@ -589,5 +594,9 @@
 		<!-- Widget france24_infocontinu -->
 		<script src="web/js/templates/france24_infocontinu.js"></script>
 		<script src="web/js/widgets/widget_france24_infocontinu.js"></script>
+
+		<!-- Widget citations_ouest_france -->
+		<script src="web/js/templates/citations_ouest_france.js"></script>
+		<script src="web/js/widgets/widget_citations_ouest_france.js"></script>
 	{% endblock js %}
 
