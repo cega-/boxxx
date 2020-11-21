@@ -88,6 +88,7 @@ If needed, because Pdns install didn't do that, you have to create manually PDNS
 - GRANT ALL PRIVILEGES ON pdns.* TO 'pdns'@localhost IDENTIFIED BY 'pdns-tgbyhn89?M';
 - Check PDNS version to import correct database schema (https://doc.powerdns.com/authoritative/guides/basic-database.html)
 - Import database struct
+- FLUSH PRIVILEGES;
 - Good to go
 
 In pdns.conf :
