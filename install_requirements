@@ -81,6 +81,24 @@ apt-get install pdns-recursor
 
 pip install mysql-connector
 
+If needed, because Pdns install didn't do that, you have to create manually PDNS Database : 
+- On MySQL CLI
+- CREATE DATABASE 'pdns';
+- CREATE USER 'pdns'@localhost IDENTIFIED BY 'pdns-tgbyhn89?M';
+- GRANT ALL PRIVILEGES ON pdns.* TO 'pdns'@localhost IDENTIFIED BY 'pdns-tgbyhn89?M';
+- Check PDNS version to import correct database schema (https://doc.powerdns.com/authoritative/guides/basic-database.html)
+- Import database struct
+- Good to go
+
+In pdns.conf :
+launch=gmysql
+gmysql-host=localhost
+gmysql-port=3306
+gmysql-dbname=pdns
+gmysql-user=pdns
+gmysql-password=pdns-tgbyhn89?M
+gmysql-dnssec=yes
+
 MySQL root pass = tgbyhn89?M
 MySQL pdns pass = pdns-tgbyhn89?M
 
@@ -126,9 +144,10 @@ INSERT INTO records (domain_id, name, content, type,ttl,prio)
 VALUES (1,'*.example.lan','192.0.2.42','A',120,NULL);
 
 In pdns.conf allow-recursion for LAN Subnet only (ie. 192.168.42.0/24, all with 0.0.0.0/0 and IPv6 ::/0)
-In pdns.conf recursor put DNS recursor which take care of all request the master can't (usually local powerdns in recursor mode on port 54)
+In pdns.conf recursor put DNS recursor which take care of all request the master can't (usually local powerdns in recursor mode on port 54 : recursor=192.168.1.2:54)
+In recursor.conf put port=54
 In recursor.conf put forward-zone for LAN domain and other for everything else (lan=192.168.42.1, .=8.8.8.8)
-In recursor.conf, if needed, put forward-zone-recurse everything else statement dispite of forward-zone(.=8.8.8.8 and IPv6 DNS Server 2001:4860:4860::8888)
+In recursor.conf, if needed, put forward-zone-recurse everything else statement dispite of forward-zone(.=8.8.8.8 and IPv6 DNS Server 2001:4860:4860::8888 : lan=192.168.1.10, .=2001:4860:4860::8888;8.8.8.8)
 
 #####
 ## Boxxx Firewall redirect
