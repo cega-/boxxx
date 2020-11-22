@@ -150,6 +150,19 @@ In recursor.conf put port=54
 In recursor.conf put forward-zone for LAN domain and other for everything else (lan=192.168.42.1, .=8.8.8.8)
 In recursor.conf, if needed, put forward-zone-recurse everything else statement dispite of forward-zone(.=8.8.8.8 and IPv6 DNS Server 2001:4860:4860::8888 : lan=192.168.1.10, .=2001:4860:4860::8888;8.8.8.8)
 
+But according to https://doc.powerdns.com/authoritative/guides/recursion.html
+New configuration should be : 
+In pdns.conf :
+local-address=127.0.0.1
+local-ipv6=::1
+local-port=54
+
+In recursor.conf :
+forward-zones=lan=192.168.1.10, .=127.0.0.1:54;2001:4860:4860::8888;8.8.8.8
+forward-zones-recurse=lan=192.168.1.10, cega.ovh=192.168.1.10, .=127.0.0.1:54;2001:4860:4860::8888;8.8.8.8
+local-address=0.0.0.0
+local-port=53
+
 #####
 ## Boxxx Firewall redirect
 #####
@@ -160,6 +173,13 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 or
 In /etc/sysctl.conf
 Put IP Forward, net.ipv4.ip_forward=1
+
+In /etc/sysctl.conf, add:
+#Do not consider loopback addresses as martian source or destination
+#while routing. This enables the use of 127/8 for local routing purposes.
+#default FALSE
+net.ipv4.conf.all.route_localnet=1
+(source:https://hauweele.net/~gawen/blog/?tag=route_localnet)
 
 iptables -L -n -v -t nat
 iptables -L -n -v
